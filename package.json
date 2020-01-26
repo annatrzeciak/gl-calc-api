@@ -2,8 +2,7 @@
   "name": "gl-calc-api",
   "version": "1.0.0",
   "description": "super node app ",
-  "main": "app.js",
-  "private": true,
+  "main": "server.js",
   "scripts": {
     "start:server": "nodemon server.js"
   },
