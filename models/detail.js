@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const detailSchema = mongoose.Schema({
-  _id: { type: String, required: true },
+  _id: { type: Number, required: true },
   energyKcal: { type: Object, required: false },
   energyKj: { type: Object, required: false },
   fat: { type: Object, required: false },
@@ -10,6 +10,7 @@ const detailSchema = mongoose.Schema({
   carbohydrate: { type: Object, required: false },
   protein: { type: Object, required: false },
   sodium: { type: Object, required: false },
+  salt: { type: Object, required: false },
   water: { type: Object, required: false },
   waterDr: { type: Object, required: false },
   alcohol: { type: Object, required: false },
@@ -60,6 +61,10 @@ const detailSchema = mongoose.Schema({
   gi: { type: Object, required: false },
   gl: { type: Object, required: false },
   caffeine: { type: Object, required: false },
+  measures: { type: Array, required: false },
+  measuresLabel: { type: String, required: false },
+  measuresId: { type: String, required: false },
+  healthLabels: { type: Object, required: false },
 });
 
 module.exports = mongoose.model('detail', detailSchema);

@@ -12,6 +12,18 @@ router.get('/', (req, res, next) => {
   });
 });
 
+// get last added products
+router.get('/last-added', (req, res, next) => {
+  Product.find()
+    .sort('added')
+    .limit(10)
+    .then((documents) => {
+      res.status(200).json({
+        products: documents.map((item) => item)
+      });
+    });
+});
+
 // search products
 router.get('/search/:searchValue', (req, res, next) => {
   Product.find().then((documents) => {

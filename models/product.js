@@ -6,7 +6,8 @@ const productSchema = mongoose.Schema({
   name_pl: { type: String, required: false },
   cat: { type: String, required: true },
   reporturl: { type: String, required: false },
-  photo: { type: String, required: false }
+  photo: { type: String, required: false },
+  added: { type: Date, default: new Date() }
 });
 
 module.exports = mongoose.model('Product', productSchema);

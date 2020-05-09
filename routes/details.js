@@ -7,7 +7,7 @@ const Detail = require('../models/detail');
 router.get('/:id', (req, res, next) => {
   Detail.find({ _id: req.params.id }).then((documents) => {
     res.status(200).json({
-      'product-details': documents,
+      'details': documents[0],
     });
   });
 });
