@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const mainRoutes = require('./routes/main');
 const productsRoutes = require('./routes/products');
 const detailsRoutes = require('./routes/details');
-const test = require('./routes/tests');
+// const test = require('./routes/tests');
 require('dotenv').config();
 
 
@@ -39,6 +39,6 @@ app.use((req, res, next) => {
 app.use('/', mainRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/details', detailsRoutes);
-app.use('/api/tests', test);
+// app.use('/api/tests', test);
 
 module.exports = app;
