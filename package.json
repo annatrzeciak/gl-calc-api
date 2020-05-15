@@ -20,6 +20,7 @@
     "nodemon": "^1.19.4"
   },
   "dependencies": {
+    "dotenv": "^8.2.0",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-security": "^1.4.0",
     "superagent": "^5.2.1"
