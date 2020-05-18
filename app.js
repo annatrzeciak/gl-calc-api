@@ -5,21 +5,29 @@ const mongoose = require('mongoose');
 const mainRoutes = require('./routes/main');
 const productsRoutes = require('./routes/products');
 const detailsRoutes = require('./routes/details');
+const userRoutes = require('./routes/user');
+
+const config = require('./config');
+
 // const test = require('./routes/tests');
 require('dotenv').config();
 
-
 const app = express();
-mongoose
-  .connect(
-    `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0-cr7xd.mongodb.net/gl-calc?retryWrites=true&w=majority`
-  )
-  .then(() => {
-    console.log('Connected to database');
-  })
-  .catch(() => {
-    console.log('Connection failed');
-  });
+
+// Connect to MongoDB
+mongoose.connect(config.URI_MONGO, {
+  useCreateIndex: true,
+  useNewUrlParser: true
+}).catch((err) => console.log('Error: Could not connect to MongoDB.', err));
+
+
+mongoose.connection.on('connected', () => {
+  console.log('Connected to database');
+});
+mongoose.connection.on('error', (err) => {
+  console.log('Error: Could not connect to MongoDB.', err);
+});
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -39,6 +47,7 @@ app.use((req, res, next) => {
 app.use('/', mainRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/details', detailsRoutes);
+app.use('/api/users', userRoutes);
 // app.use('/api/tests', test);
 
 module.exports = app;

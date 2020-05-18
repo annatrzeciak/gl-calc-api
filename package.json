@@ -4,7 +4,9 @@
   "description": "super node app ",
   "main": "server.js",
   "scripts": {
-    "start:server": "nodemon server.js"
+    "start": "nodemon --exec babel-node server.js",
+    "build": "babel src --out-dir dist",
+    "serve": "node dist/app.js"
   },
   "repository": {
     "type": "git",
@@ -12,17 +14,33 @@
   },
   "author": "Anna Trzeciak",
   "devDependencies": {
+    "@babel/cli": "^7.5.5",
+    "@babel/core": "^7.5.5",
+    "@babel/node": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.0.0",
+    "@babel/plugin-proposal-export-default-from": "^7.0.0",
+    "@babel/plugin-transform-async-to-generator": "^7.5.0",
+    "@babel/preset-env": "^7.5.5",
     "body-parser": "^1.19.0",
     "eslint": "^5",
+    "eslint-config-airbnb-base": "^14.1.0",
+    "eslint-plugin-jsdoc": "^25.4.2",
+    "eslint-plugin-only-ascii": "0.0.0",
     "eslint-plugin-prettier": "^3.1.2",
     "express": "^4.16.4",
     "mongoose": "^5.5.8",
     "nodemon": "^1.19.4"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.4.4",
+    "babel-preset-env": "^1.7.0",
+    "bcrypt": "^4.0.1",
+    "cors": "^2.8.5",
+    "dotenv": "^8.2.0",
+    "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-security": "^1.4.0",
-    "superagent": "^5.2.1",
-    "dotenv": "^8.2.0"
+    "jsonwebtoken": "^8.5.1",
+    "superagent": "^5.2.1"
   }
 }

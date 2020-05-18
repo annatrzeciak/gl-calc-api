@@ -10,6 +10,8 @@ extends:
   - airbnb-base
   # Additional rules for Node.js, lints deprecated APIs
   - plugin:node/recommended
+  # Help identify potential security issues (finds a lot of false positives)
+  - plugin:security/recommended
 rules:
   # Disable requiring trailing commas in arrays
   comma-dangle: off
