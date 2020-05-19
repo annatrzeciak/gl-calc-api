@@ -32,6 +32,7 @@
     "nodemon": "^1.19.4"
   },
   "dependencies": {
+    "@vue/cli": "^4.2.3",
     "@babel/polyfill": "^7.4.4",
     "babel-preset-env": "^1.7.0",
     "bcrypt": "^4.0.1",
