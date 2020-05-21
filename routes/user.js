@@ -19,10 +19,30 @@ router.post("/details", authController.accessTokenVerify, (req, res, next) => {
   });
 });
 
-router.post(
-  "/register",
-  authController.accessTokenVerify,
-  authController.createUser
-);
+router.post("/register", (req, res, next) => {
+  authController.validateEmailAccessibility(req.body.email).then(valid => {
+    if (valid) {
+      User.create(
+        {
+          name: req.body.name,
+          email: req.body.email,
+          password: req.body.password
+        },
+        (error, result) => {
+          if (error) next(error);
+          else {
+            res.json({
+              message: "Użytkownik został utworzony"
+            });
+          }
+        }
+      );
+    } else {
+      res
+        .status(409)
+        .send({ message: "Użytkownik o podanym adresie email już istnieje" });
+    }
+  });
+});
 
 module.exports = router;
