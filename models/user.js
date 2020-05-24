@@ -37,7 +37,8 @@ const userSchema = mongoose.Schema(
 );
 
 userSchema.pre("save", function(next) {
-  this.password = bcrypt.hashSync(this.password, saltRounds);
+  if (this.password !== undefined)
+    this.password = bcrypt.hashSync(this.password, saltRounds);
   next();
 });
 

@@ -4,7 +4,7 @@ const User = require("../models/user");
 const bcrypt = require("bcrypt");
 import jwt from "jsonwebtoken";
 const config = require("../config");
-
+const email = require("../controllers/email");
 const router = express.Router();
 
 router.post("/login", (req, res, next) => {
@@ -75,8 +75,14 @@ router.post("/register", (req, res, next) => {
           password: req.body.password
         },
         (error, result) => {
+          console.log(result);
           if (error) next(error);
           else {
+            email.sendConfirmationEmail(
+              req.body.name,
+              req.body.email,
+              authController.generateTokens(req, result)
+            );
             res.json({
               message: "Użytkownik został utworzony"
             });
@@ -88,6 +94,34 @@ router.post("/register", (req, res, next) => {
         .status(409)
         .send({ message: "Użytkownik o podanym adresie email już istnieje" });
     }
+  });
+});
+
+router.get("/confirm/:email/:token", (req, res, next) => {
+  jwt.verify(req.params.token, config.TOKEN_SECRET_JWT, function(err, payload) {
+    if (err) {
+      res.redirect(`${config.UI_URL}/token-error?errorType=invalid-token`);
+    }
+    User.findById(payload.sub, function(err, person) {
+      if (!person) {
+        res.redirect(`${config.UI_URL}/token-error?errorType=user-not-found`);
+      } else if (person.email !== req.params.email) {
+        res.redirect(
+          `${config.UI_URL}/token-error?errorType=token-assigned-to-another-user`
+        );
+      } else {
+        if (person.emailConfirmed) {
+          res.redirect(
+            `${config.UI_URL}/token-error?errorType=user-has-already-confirmed-email`
+          );
+        } else {
+          person.emailConfirmed = true;
+          person.save(() => {
+            res.redirect(`${config.UI_URL}/token-success`);
+          });
+        }
+      }
+    });
   });
 });
 

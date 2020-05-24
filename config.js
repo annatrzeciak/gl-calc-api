@@ -4,5 +4,11 @@ module.exports = {
   // PORT APP CONFIG
   PORT_LISTEN: process.env.PORT_LISTEN || 3000,
   // JWT CONFIG
-  TOKEN_SECRET_JWT: process.env.TOKEN_SECRET_JWT || 'jWt9982_s!tokenSecreTqQrtw'
+  TOKEN_SECRET_JWT:
+    process.env.TOKEN_SECRET_JWT || "jWt9982_s!tokenSecreTqQrtw",
+  API_URL: process.env.API_URL || `http://api.gl-calc.docker:3000/api`,
+  UI_URL: process.env.UI_URL || `http://gl-calc.docker:8080`,
+  APP_NAME: process.env.APP_NAME || `GL calc`,
+  MAIL_SERVER_USER: process.env.MAIL_SERVER_USER ,
+  MAIL_SERVER_PASSWORD: process.env.MAIL_SERVER_PASSWORD ,
 };
