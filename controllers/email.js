@@ -13,7 +13,7 @@ let transport = nodemailer.createTransport({
 const message = {
   from: "a.trzeciak@code-way.com"
 };
-exports.sendConfirmationEmail = (name, email, tokens) =>
+exports.sendConfirmationEmail = (name, email, tokens) => {
   transport.sendMail(
     { from: message.from, ...generateConfirmEmail(name, email, tokens) },
     function(err, info) {
@@ -25,7 +25,7 @@ exports.sendConfirmationEmail = (name, email, tokens) =>
       }
     }
   );
-
+};
 const generateConfirmEmail = (name, email, tokens) => {
   const confirmLink = `${config.API_URL}/users/confirm/${email}/${tokens.refreshToken}`;
   return {

@@ -1,4 +1,5 @@
 const express = require("express");
+
 const authController = require("../controllers/auth");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
@@ -15,16 +16,19 @@ router.post("/login", (req, res, next) => {
     (err, user) => {
       if (err || !user) {
         res.status(401).send({
-          message: "Unauthorized"
+          message: "Nie znaleziono użytkownika o podanym adresie email"
         });
         next(err);
       } else if (bcrypt.compareSync(req.body.password, user.password)) {
         res.json(
-          authController.generateTokens(req, { ...user, email: req.body.email })
+          authController.generateTokens(req, {
+            ...user,
+            email: req.body.email
+          })
         );
       } else {
         res.status(401).send({
-          message: "Invalid email/password"
+          message: "Niepoprawne hasło"
         });
       }
     }
@@ -55,12 +59,35 @@ router.post("/refresh", (req, res, next) => {
 
 // secure router
 router.post("/details", authController.accessTokenVerify, (req, res, next) => {
-  User.find({ email: req.body.email }, {}, (err, user) => {
+  User.findOne({ email: req.body.email }, {}, (err, user) => {
     if (err || !user) {
       res.status(401).send({ message: "Unauthorized" })``;
       next(err);
     } else {
-      res.json({ status: "success", user: user[0] });
+      res.json({ status: "success", user: user });
+    }
+  });
+});
+
+router.post("/send-confirmation-email", (req, res, next) => {
+  User.findOne({ email: req.body.email }, {}, (err, user) => {
+    if (err || !user) {
+      res.status(401).send({
+        message:
+          "Wystąpił błąd podczas wysyłania emaila. Spróbuj ponownie lub skontaktuj się z administratorem."
+      });
+      next(err);
+    } else {
+      email.sendConfirmationEmail(
+        user.name,
+        user.email,
+        authController.generateTokens(req, user)
+      );
+      res.json({
+        status: "success",
+        message: "Wiadomość została pomyślnie wysłana na adres: " + user.email,
+        user: user
+      });
     }
   });
 });
@@ -75,7 +102,6 @@ router.post("/register", (req, res, next) => {
           password: req.body.password
         },
         (error, result) => {
-          console.log(result);
           if (error) next(error);
           else {
             email.sendConfirmationEmail(
