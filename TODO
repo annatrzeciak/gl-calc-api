@@ -1,0 +1,10 @@
+TODO: Save calculations in db
+TODO: Not logged user calculations only in local storage
+TODO: Add 2 plans - basic (free) and  expanded (paid)
+TODO: First month has `extended plan` for free
+TODO: Add payments https://stripe.com/
+TODO: Generate Invoice (after payment)
+TODO: Export calculations as csv and pdf (expanded plan)
+
+TODO: Add form to add new product (by user)
+TODO: Add form to add new recipe (by user)
