@@ -1,7 +1,8 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
 const productSchema = mongoose.Schema({
-  _id: { type: Number },
+  old_id: { type: Number },
+  details_id: { type: String },
   name: { type: String, required: true },
   name_pl: { type: String, required: false },
   cat: { type: String, required: true },
@@ -10,4 +11,13 @@ const productSchema = mongoose.Schema({
   added: { type: Date, default: new Date() }
 });
 
-module.exports = mongoose.model('Product', productSchema);
+productSchema.virtual("details", {
+  ref: "det",
+  localField: "details_id",
+  foreignField: "_id",
+  justOne: true
+});
+productSchema.set("toObject", { virtuals: true });
+productSchema.set("toJSON", { virtuals: true });
+
+module.exports = mongoose.model("Prod", productSchema);

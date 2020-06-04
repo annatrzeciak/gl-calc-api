@@ -7,6 +7,7 @@ const mainRoutes = require("./routes/main");
 const productsRoutes = require("./routes/products");
 const detailsRoutes = require("./routes/details");
 const userRoutes = require("./routes/user");
+const calculationsRoutes = require("./routes/calculations");
 
 const config = require("./config");
 
@@ -50,6 +51,7 @@ app.use("/", mainRoutes);
 app.use("/api/products", productsRoutes);
 app.use("/api/details", detailsRoutes);
 app.use("/api/users", userRoutes);
+app.use("/api/calculations", calculationsRoutes);
 // app.use('/api/tests', test);
 
 module.exports = app;

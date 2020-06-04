@@ -1,7 +1,8 @@
 const mongoose = require('mongoose');
 
 const detailSchema = mongoose.Schema({
-  _id: { type: Number, required: true },
+  _id: { type: mongoose.Schema.ObjectId, required: true },
+  old_id: { type: Number, required: true },
   energyKcal: { type: Object, required: false },
   energyKj: { type: Object, required: false },
   fat: { type: Object, required: false },
@@ -67,4 +68,4 @@ const detailSchema = mongoose.Schema({
   healthLabels: { type: Object, required: false },
 });
 
-module.exports = mongoose.model('detail', detailSchema);
+module.exports = mongoose.model('det', detailSchema);
