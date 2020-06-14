@@ -59,7 +59,7 @@ router.get("/search/:searchValue", (req, res, next) => {
             .includes(req.params.searchValue.toLowerCase())
       );
       res.status(200).json({
-        products: filteredDocuments.map(item => item),
+        products: filteredDocuments,
         count: filteredDocuments.length
       });
     })
@@ -83,7 +83,7 @@ router.post("/", (req, res, next) => {
     console.log("Product added successfully");
     res.status(201).json({
       product: {
-        id: item._id,
+        _id: item._id,
         name: item.name,
         name_pl: item.name_pl,
         cat: item.cat,

@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 
 const calculationSchema = mongoose.Schema({
+  _id: { type: mongoose.Schema.ObjectId },
   date: { type: Date, default: new Date() },
   mealNumber: { type: Number, required: true },
   products: [
