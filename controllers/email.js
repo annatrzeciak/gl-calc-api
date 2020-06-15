@@ -1,3 +1,5 @@
+const debug = require("debug")("controller:email");
+
 const nodemailer = require("nodemailer");
 const config = require("../config");
 
@@ -14,17 +16,19 @@ const message = {
   from: "a.trzeciak@code-way.com"
 };
 exports.sendConfirmationEmail = (name, email, tokens) => {
-  transport.sendMail(
-    { from: message.from, ...generateConfirmEmail(name, email, tokens) },
-    function(err, info) {
-      if (err) {
-        console.log(err);
-      } else {
-        console.log(info);
-        // TODO: change console.log to debug
-      }
+  const generatedConfirmEmail = generateConfirmEmail(name, email, tokens);
+  transport.sendMail({ from: message.from, ...generatedConfirmEmail }, function(
+    err,
+    info
+  ) {
+    if (err) {
+      debug("Error during sending email", err);
+    } else {
+      debug(
+        `Sent email to: ${name}<${generatedConfirmEmail.to}>, Subject: ${generatedConfirmEmail.subject} `
+      );
     }
-  );
+  });
 };
 const generateConfirmEmail = (name, email, tokens) => {
   const confirmLink = `${config.API_URL}/users/confirm/${email}/${tokens.refreshToken}`;

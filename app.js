@@ -1,3 +1,4 @@
+const debug = require("debug")("app");
 const express = require("express");
 const bodyParser = require("body-parser");
 const mongoose = require("mongoose");
@@ -23,13 +24,13 @@ mongoose
     useCreateIndex: true,
     useNewUrlParser: true
   })
-  .catch(err => console.log("Error: Could not connect to MongoDB.", err));
+  .catch(err => debug("Error: Could not connect to MongoDB.", err));
 
 mongoose.connection.on("connected", () => {
-  console.log("Connected to database");
+  debug("Connected to database");
 });
 mongoose.connection.on("error", err => {
-  console.log("Error: Could not connect to MongoDB.", err);
+  debug("Error: Could not connect to MongoDB.", err);
 });
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));

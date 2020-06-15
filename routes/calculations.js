@@ -1,3 +1,4 @@
+const debug = require("debug")("routes:calculations");
 const express = require("express");
 
 const router = express.Router();
@@ -9,13 +10,16 @@ const authController = require("../controllers/auth");
 const ObjectId = require("mongoose").Types.ObjectId;
 
 router.post("/:email", authController.accessTokenVerify, (req, res, next) => {
+  debug("POST /calculations/:email");
+  debug("User email:", req.params.email);
   const pageSize = req.body.pageSize;
   const skip = (req.body.page - 1) * 2;
-
+  debug("Page size:", pageSize, "Page:", req.body.page);
   User.findOne({ email: req.params.email }).then(async user => {
     const count = Calculation.countDocuments({
       email: req.params.email
     }).exec();
+    debug("User has calculations:", count);
 
     Calculation.aggregate([
       {
@@ -47,16 +51,19 @@ router.post("/:email", authController.accessTokenVerify, (req, res, next) => {
           populate: { path: "details", model: Detail }
         })
           .then(async calcs => {
+            debug("Return calculations");
             res.status(201).json({
               calculations: { ...calcs },
               details: { pageSize: pageSize, page: req.body.page, count: count }
             });
           })
           .catch(e => {
+            debug("Error during getting data", e);
             res.status(400).message("Problem z pobraniem danych");
           });
       })
       .catch(e => {
+        debug("Error during getting data", e);
         res.status(400).message("Problem z pobraniem danych");
       });
   });
@@ -65,8 +72,11 @@ router.get(
   "/:email/today",
   authController.accessTokenVerify,
   (req, res, next) => {
+    debug("POST /calculations/:email/today");
+    debug("GET today calculations");
+    debug("User email:", req.params.email);
+
     User.findOne({ email: req.params.email }).then(async user => {
-      console.log("GET today calculations");
       Calculation.aggregate([
         {
           $match: {
@@ -86,16 +96,20 @@ router.get(
             populate: { path: "details", model: Detail }
           })
             .then(async calcs => {
+              debug("Return today calculations");
+
               const todayCalcs = calcs[0].meals;
               res.status(201).json({
                 calculations: { ...todayCalcs }
               });
             })
             .catch(e => {
+              debug("Error during getting data", e);
               res.status(400).text("Problem z pobraniem danych");
             });
         })
         .catch(e => {
+          debug("Error during getting data", e);
           res.status(400).text("Problem z pobraniem danych");
         });
     });
@@ -106,11 +120,13 @@ router.post(
   "/:email/add-calculation",
   authController.accessTokenVerify,
   (req, res, next) => {
+    debug("POST /calculations/:email/add-calculation");
+    debug("Add calculation");
     User.findOne({ email: req.params.email })
       .then(user => {
         req.body.calculations.calculations.forEach((calc, i) => {
           if (calc._id) {
-            console.log("Update calculation " + calc._id);
+            debug("Update calculation " + calc._id);
             Calculation.findOne({
               _id: calc._id
             }).then(calculation => {
@@ -123,31 +139,27 @@ router.post(
                 });
                 calculation
                   .save()
-                  .then(r => console.log("Calculation " + r._id + " saved"))
+                  .then(r => debug("Calculation " + r._id + " saved"))
                   .catch(e =>
-                    console.error(
-                      "Error during saving calculation id: " +
-                        calculation._id +
-                        " message: " +
-                        e.message
+                    debug(
+                      "Error during saving calculation id: " + calculation._id,
+                      e
                     )
                   );
               } else {
                 calculation
                   .delete()
-                  .then(r => console.log("Calculation " + r._id + " deleted"))
+                  .then(r => debug("Calculation " + r._id + " deleted"))
                   .catch(e =>
-                    console.error(
-                      "Error during deleting calculation id: " +
-                        calculation._id +
-                        " message: " +
-                        e.message
+                    debug(
+                      "Error during saving calculation id: " + calculation._id,
+                      e
                     )
                   );
               }
             });
           } else {
-            console.log("Create new calculation");
+            debug("Create new calculation");
             const cal = new Calculation({
               _id: new ObjectId(),
               date: new Date(req.body.calculations.date),
@@ -160,12 +172,8 @@ router.post(
             });
             cal
               .save()
-              .then(r => console.log("Calculation " + r._id + " added"))
-              .catch(e =>
-                console.error(
-                  "Error during adding calculation, message: " + e.message
-                )
-              );
+              .then(r => debug("Calculation " + r._id + " added"))
+              .catch(e => debug("Error during adding calculation", e));
           }
           if (i == req.body.calculations.calculations.length - 1) {
             res.status(201).json({ status: "OK" });
@@ -173,7 +181,7 @@ router.post(
         });
       })
       .catch(e => {
-        console.log(e);
+        debug("Error", e);
       });
   }
 );
