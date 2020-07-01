@@ -1,6 +1,6 @@
 const debug = require("debug")("controller:payment");
 const config = require("../config");
-
+const Subscription = require("../models/subscription");
 const stripe = require("stripe")(config.STRIPE_SECRET, { apiVersion: "" });
 
 exports.createSession = async (email, subscriptionId) => {
@@ -23,4 +23,12 @@ exports.createSession = async (email, subscriptionId) => {
   });
   debug("Created session:", session.id);
   return session;
+};
+
+exports.getUserSubscriptions = async (res, user) => {
+  return new Promise(resolve => {
+    Subscription.find({ userId: user._id }).then(subscriptions => {
+      resolve(subscriptions);
+    });
+  });
 };

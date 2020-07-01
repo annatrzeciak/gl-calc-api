@@ -10,6 +10,49 @@ const ObjectId = require("mongoose").Types.ObjectId;
 
 const stripe = require("stripe")(config.STRIPE_SECRET, { apiVersion: "" });
 
+router.get("/:email", authController.accessTokenVerify, (req, res, next) => {
+  debug("POST /subscriptions/:email");
+  debug("GET all subscriptions");
+  debug("User email:", req.params.email);
+
+  User.findOne({ email: req.params.email })
+    .then(async user => {
+      const subscriptions = await paymentController.getUserSubscriptions(
+        res,
+        user
+      );
+      debug("User has " + subscriptions.length + " subscriptions");
+      const dataToReturn = subscriptions.map(sub => ({
+        id: sub._id,
+        startDate: sub.startDate,
+        endDate: sub.endDate,
+        status: sub.status,
+        cardDetails: sub.metadata["payment-success"]
+          ? sub.metadata["payment-success"].charges.data[0]
+              .payment_method_details.card
+          : sub.metadata["payment-errors"]
+          ? sub.metadata["payment-errors"].last_payment_error.payment_method
+              .card
+          : null,
+        amount: sub.metadata["payment-success"]
+          ? sub.metadata["payment-success"].charges.data[0].amount
+          : sub.metadata["payment-errors"]
+          ? sub.metadata["payment-errors"].last_payment_error.amount
+          : null,
+        currency: sub.metadata["payment-success"]
+          ? sub.metadata["payment-success"].charges.data[0].currency
+          : sub.metadata["payment-errors"]
+          ? sub.metadata["payment-errors"].last_payment_error.currency
+          : null
+      }));
+      res.json({ subscriptions: dataToReturn });
+    })
+    .catch(e => {
+      debug("Error during getting data", e);
+      res.status(400).text("Problem z pobraniem danych");
+    });
+});
+
 router.post(
   "/:email/create-payment-intent",
   authController.accessTokenVerify,
@@ -65,9 +108,19 @@ router.get("/:email/checkout/:id", async (req, res, next) => {
 
     res.redirect(`${config.UI_URL}/konto/sklep?status=success`);
   } else if (req.query.result === "error") {
-    debug("Payment completed with errors:", paymentIntent.status);
+    debug(
+      "Payment completed with errors:",
+      paymentIntent.last_payment_error.code +
+        (paymentIntent.last_payment_error.code === "card_declined"
+          ? ":" + paymentIntent.last_payment_error.decline_code
+          : "")
+    );
     subscription.status =
-      "Payment completed with errors:" + paymentIntent.status;
+      "Payment completed with errors:" +
+      paymentIntent.last_payment_error.code +
+      (paymentIntent.last_payment_error.code === "card_declined"
+        ? ":" + paymentIntent.last_payment_error.decline_code
+        : "");
     subscription.metadata = {
       ...subscription.metadata,
       "payment-errors": paymentIntent
@@ -75,7 +128,13 @@ router.get("/:email/checkout/:id", async (req, res, next) => {
   }
   await subscription.save();
 
-  res.redirect(`${config.UI_URL}/konto/sklep?status=error:${paymentIntent.status}`);
+  res.redirect(
+    `${config.UI_URL}/konto/sklep?status=error:${paymentIntent
+      .last_payment_error.code +
+      (paymentIntent.last_payment_error.code === "card_declined"
+        ? ":" + paymentIntent.last_payment_error.decline_code
+        : "")}`
+  );
 });
 
 module.exports = router;
