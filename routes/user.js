@@ -3,6 +3,7 @@ const debug = require("debug")("routes:user");
 const express = require("express");
 
 const authController = require("../controllers/auth");
+const paymentController = require("../controllers/payment");
 const User = require("../models/user");
 const bcrypt = require("bcrypt");
 import jwt from "jsonwebtoken";
@@ -75,14 +76,17 @@ router.post("/refresh", (req, res, next) => {
 router.post("/details", authController.accessTokenVerify, (req, res, next) => {
   debug("POST /user/details");
   debug("User email: " + req.body.email);
-  User.findOne({ email: req.body.email }, {}, (err, user) => {
+  User.findOne({ email: req.body.email }, {}, async (err, user) => {
     if (err || !user) {
       debug("User not found");
       res.status(401).send({ message: "Unauthorized" })``;
       next(err);
     } else {
+      const subscriptions = await paymentController.checkThatUserHasActiveSubscription(
+        user
+      );
       debug("Return user details");
-      res.json({ status: "success", user: user });
+      res.json({ status: "success", user, subscriptions });
     }
   });
 });

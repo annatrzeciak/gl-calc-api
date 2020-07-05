@@ -24,6 +24,7 @@ router.get("/:email", authController.accessTokenVerify, (req, res, next) => {
       debug("User has " + subscriptions.length + " subscriptions");
       const dataToReturn = subscriptions.map(sub => ({
         id: sub._id,
+        paymentDate: sub.paymentDate ? sub.paymentDate : sub.startDate,
         startDate: sub.startDate,
         endDate: sub.endDate,
         status: sub.status,
@@ -60,9 +61,9 @@ router.post(
     debug("POST /subscriptions/:email/create-payment-intent");
     debug("User email:", req.params.email);
     User.findOne({ email: req.params.email }).then(async user => {
-      const now = new Date();
+      const now = new Date(req.body.startDate);
       const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 1);
+      endDate.setMonth(now.getMonth() + 1);
       endDate.setHours(23);
       endDate.setMinutes(59);
       endDate.setSeconds(59);

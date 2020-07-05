@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const subscriptionSchema = mongoose.Schema({
   _id: { type: mongoose.Schema.ObjectId },
+  paymentDate: { type: Date, default: new Date() },
   startDate: { type: Date, default: new Date() },
   endDate: { type: Date },
   status: { type: String },

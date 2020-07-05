@@ -32,3 +32,40 @@ exports.getUserSubscriptions = async (res, user) => {
     });
   });
 };
+
+exports.checkThatUserHasActiveSubscription = async user => {
+  return new Promise(resolve => {
+    Subscription.find({
+      userId: user._id,
+      status: "Payment completed successfully"
+    }).then(subscriptions => {
+      if (subscriptions.length) {
+        const checkSubscriptions = async () =>
+          new Promise(resolve => {
+            subscriptions.map((sub, i) => {
+              if (sub.endDate.getTime() < new Date().getTime()) {
+                debug("Update status to: 'Subscription expired', id:", sub._id);
+                sub.status = "Subscription expired";
+                sub.save();
+              }
+              if (i === subscriptions.length - 1) {
+                resolve(subscriptions);
+              }
+            });
+          });
+        checkSubscriptions().then(subscriptions => {
+          resolve(
+            subscriptions
+              .filter(sub => sub.status === "Payment completed successfully")
+              .map(sub => ({
+                id: sub._id,
+                endDate: sub.endDate
+              }))
+          );
+        });
+      } else {
+        resolve(subscriptions);
+      }
+    });
+  });
+};
