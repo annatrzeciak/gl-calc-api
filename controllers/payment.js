@@ -27,7 +27,7 @@ exports.createSession = async (email, subscriptionId) => {
 
 exports.getUserSubscriptions = async (res, user) => {
   return new Promise(resolve => {
-    Subscription.find({ userId: user._id }).then(subscriptions => {
+    Subscription.find({ userId: user._id }).sort({ paymentDate : -1}).then(subscriptions => {
       resolve(subscriptions);
     });
   });
