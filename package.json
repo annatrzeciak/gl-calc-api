@@ -49,7 +49,7 @@
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-node": "^11.0.0",
     "eslint-plugin-security": "^1.4.0",
-    "jsonwebtoken": "^8.5.1",
+    "jsonwebtoken": "^9.0.0",
     "nodemailer": "^6.4.6",
     "stripe": "^8.66.0",
     "superagent": "^5.2.1"
